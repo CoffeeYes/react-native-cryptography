@@ -7,11 +7,12 @@ export default function App() {
 
   React.useEffect(() => {
     Crypto.multiply(3, 7).then(setResult);
+    Crypto.test().then(setResult);
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Result: test {result}</Text>
       <CryptoViewManager color="#32a852" style={styles.box} />
     </View>
   );
