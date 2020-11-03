@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
 
 import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 
 class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -24,6 +25,19 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
 
     @ReactMethod
     fun test(promise : Promise) {
-      promise.resolve("test Kotlin Function")
+      val cipher : Cipher = Cipher.getInstance("AES");
+      val encryptionKeyString : String =  "thisisa128bitkey";
+	    val originalMessage : String = "This is a secret message";
+	    val encryptionKeyBytes : ByteArray = encryptionKeyString.toByteArray();
+
+      val secretKey = SecretKeySpec(encryptionKeyBytes,"AES");
+
+      cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+      val encryptedMessageBytes : ByteArray = cipher.doFinal(originalMessage.toByteArray());
+
+      cipher.init(Cipher.DECRYPT_MODE, secretKey);
+	    val decryptedMessageBytes : ByteArray = cipher.doFinal(encryptedMessageBytes);
+
+      promise.resolve(String(decryptedMessageBytes));
     }
 }
