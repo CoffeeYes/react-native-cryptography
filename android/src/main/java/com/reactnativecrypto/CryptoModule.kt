@@ -1,5 +1,6 @@
 package com.reactnativecrypto
 
+
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -7,6 +8,10 @@ import com.facebook.react.bridge.Promise
 
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
+import java.security.KeyPairGenerator
+import java.security.KeyPair
+import java.security.PublicKey
+import java.util.Base64
 
 class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -39,5 +44,20 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
 	    val decryptedMessageBytes : ByteArray = cipher.doFinal(encryptedMessageBytes);
 
       promise.resolve(String(decryptedMessageBytes));
+    }
+
+    @ReactMethod
+    fun generateRSAKeyPair(promise : Promise) {
+
+      val keyGenerator : KeyPairGenerator = KeyPairGenerator.getInstance("RSA");
+      keyGenerator.initialize(2048);
+
+      val keys : KeyPair = keyGenerator.generateKeyPair();
+
+      val public : PublicKey = keys.getPublic();
+      val publicBytes : ByteArray = public.getEncoded();
+      val publicBASE64 : ByteArray = Base64.getEncoder().encode(publicBytes);
+      
+      promise.resolve(String(publicBASE64));
     }
 }

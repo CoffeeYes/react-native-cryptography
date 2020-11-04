@@ -3,6 +3,7 @@ import { NativeModules, requireNativeComponent, ViewStyle } from 'react-native';
 type CryptoType = {
   multiply(a: number, b: number): Promise<number>;
   test(): Promise<string>;
+  generateRSAKeyPair(): Promise<string>;
 };
 
 type CryptoProps = {
