@@ -4,6 +4,7 @@ type CryptoType = {
   multiply(a: number, b: number): Promise<number>;
   test(): Promise<string>;
   generateRSAKeyPair(): Promise<string>;
+  SaveKeyToKeystore(key : string) : Promise<string>;
 };
 
 type CryptoProps = {

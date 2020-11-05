@@ -11,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec
 import java.security.KeyPairGenerator
 import java.security.KeyPair
 import java.security.PublicKey
+import java.security.KeyStore
 import java.util.Base64
 
 class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -57,7 +58,17 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
       val public : PublicKey = keys.getPublic();
       val publicBytes : ByteArray = public.getEncoded();
       val publicBASE64 : ByteArray = Base64.getEncoder().encode(publicBytes);
-      
+
+
+
+
       promise.resolve(String(publicBASE64));
+    }
+
+    @ReactMethod
+    fun SaveKeyToKeystore(alias : String, key : String, promise : Promise) {
+      val ks : KeyStore = KeyStore.getInstance("AndroidKeyStore").apply {
+        load(null)
+      }
     }
 }
