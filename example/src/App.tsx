@@ -9,7 +9,11 @@ export default function App() {
   React.useEffect(() => {
     Crypto.multiply(3, 7).then(setResult);
     Crypto.test().then(setResult);
-    Crypto.generateRSAKeyPair().then(keyPair => setPublicKey(keyPair));
+    Crypto.generateRSAKeyPair("test").then(() => {
+      Crypto.loadKeyFromKeystore("test").then(key => {
+        setPublicKey(key)
+      })
+    });
   }, []);
 
   return (
