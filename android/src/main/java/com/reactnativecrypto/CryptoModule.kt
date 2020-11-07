@@ -16,6 +16,8 @@ import java.security.KeyStore
 import java.util.Base64
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import java.security.KeyFactory
+import java.security.spec.X509EncodedKeySpec
 
 class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -83,14 +85,50 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
 
     @ReactMethod
     fun loadKeyFromKeystore(alias : String, promise : Promise) {
-      // The key pair can also be obtained from the Android Keystore any time as follows:
       val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
       keyStore.load(null);
-      val privateKey : PrivateKey = keyStore.getKey(alias, null) as PrivateKey;
+      //val privateKey : PrivateKey = keyStore.getKey(alias, null) as PrivateKey;
       val publicKey : PublicKey = keyStore.getCertificate(alias).getPublicKey();
       val publicBytes : ByteArray = publicKey.getEncoded();
       val publicBASE64 : ByteArray = Base64.getEncoder().encode(publicBytes);
 
       promise.resolve(String(publicBASE64))
     }
+
+    @ReactMethod
+    fun encryptString(
+      alias : String,
+      stringToEncrypt : String,
+      promise : Promise) {
+        val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+
+
+        val publicKey : PublicKey = keyStore.getCertificate(alias).getPublicKey();
+        val cipher : Cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+
+        val stringAsBytes : ByteArray = stringToEncrypt.toByteArray();
+        val encryptedBytes : ByteArray = cipher.doFinal(stringAsBytes);
+        val encryptedStringBASE64 : ByteArray = Base64.getEncoder().encode(encryptedBytes);
+
+        promise.resolve(String(encryptedStringBASE64));
+      }
+
+    @ReactMethod
+    fun decryptString(
+      alias : String,
+      stringToDecrypt : String,
+      promise : Promise) {
+        val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+        val privateKey : PrivateKey = keyStore.getKey(alias, null) as PrivateKey;
+
+        val cipher : Cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+
+        val encryptedStringAsBytes : ByteArray = Base64.getDecoder().decode(stringToDecrypt.toByteArray());
+
+        promise.resolve(stringToDecrypt);
+      }
 }
