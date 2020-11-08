@@ -98,6 +98,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     @ReactMethod
     fun encryptString(
       alias : String,
+      encryptionType : String,
       stringToEncrypt : String,
       promise : Promise) {
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -105,7 +106,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
 
 
         val publicKey : PublicKey = keyStore.getCertificate(alias).getPublicKey();
-        val cipher : Cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        val cipher : Cipher = Cipher.getInstance(encryptionType);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
         val stringAsBytes : ByteArray = stringToEncrypt.toByteArray();
@@ -118,6 +119,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     @ReactMethod
     fun decryptString(
       alias : String,
+      encryptionType : String,
       stringToDecrypt : String,
       promise : Promise) {
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");

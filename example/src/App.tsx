@@ -19,8 +19,14 @@ export default function App() {
   }, []);
 
   const encryptAndDecryptTest = async text => {
-    const encryptedString = await Crypto.encryptString("test",text);
-    const decryptedString = await Crypto.decryptString("test",encryptedString);
+    const encryptedString = await Crypto.encryptString(
+      "test",
+      "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
+      text);
+    const decryptedString = await Crypto.decryptString(
+      "test",
+      "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
+      encryptedString);
     return decryptedString;
   }
 
