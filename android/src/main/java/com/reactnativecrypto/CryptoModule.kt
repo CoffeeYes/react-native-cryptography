@@ -126,7 +126,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         keyStore.load(null);
         val privateKey : PrivateKey = keyStore.getKey(alias, null) as PrivateKey;
 
-        val cipher : Cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        val cipher : Cipher = Cipher.getInstance(encryptionType);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
         val encryptedStringAsBytes : ByteArray = Base64.getDecoder().decode(stringToDecrypt.toByteArray());
