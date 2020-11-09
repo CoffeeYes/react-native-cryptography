@@ -74,6 +74,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
       keyPairGenerator.initialize(KeyGenParameterSpec.Builder(
         alias,
         KeyProperties.PURPOSE_DECRYPT)
+        .setBlockModes(KeyProperties.BLOCK_MODE_ECB)
         .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
         .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
         .build()
@@ -84,11 +85,23 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     }
 
     @ReactMethod
+    fun deleteRSAKeyPair(alias : String, promise : Promise) {
+      val keyStore = KeyStore.getInstance("AndroidKeyStore")
+      keyStore.load(null)
+      keyStore.deleteEntry(alias)
+      promise.resolve(null);
+    }
+
+    @ReactMethod
     fun loadKeyFromKeystore(alias : String, promise : Promise) {
       val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
       keyStore.load(null);
       //val privateKey : PrivateKey = keyStore.getKey(alias, null) as PrivateKey;
-      val publicKey : PublicKey = keyStore.getCertificate(alias).getPublicKey();
+      val publicKey = keyStore.getCertificate(alias)?.publicKey;
+      if(publicKey === null) {
+        return promise.resolve("Public Key Not Found")
+      }
+
       val publicBytes : ByteArray = publicKey.getEncoded();
       val publicBASE64 : ByteArray = Base64.getEncoder().encode(publicBytes);
 
