@@ -10,10 +10,10 @@ export default function App() {
   React.useEffect(() => {
     Crypto.multiply(3, 7).then(setResult);
     Crypto.test().then(setResult);
-    // Crypto.generateRSAKeyPair("test2");
+    Crypto.generateRSAKeyPair("test");
     Crypto.loadKeyFromKeystore("test").then(publicKey => setPublicKey(publicKey))
-    // Crypto.deleteRSAKeyPair("test2");
-    // encryptAndDecryptTest("this is a test string").then(text => setTestText(text))
+    // Crypto.deleteRSAKeyPair("test");
+    encryptAndDecryptTest("this is a test string").then(text => setTestText(text))
   }, []);
 
   const encryptAndDecryptTest = async text => {

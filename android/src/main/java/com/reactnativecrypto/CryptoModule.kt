@@ -14,10 +14,15 @@ import java.security.PublicKey
 import java.security.PrivateKey
 import java.security.KeyStore
 import java.util.Base64
-import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import java.security.KeyFactory
 import java.security.spec.X509EncodedKeySpec
+import java.security.GeneralSecurityException
+
+import android.security.keystore.KeyGenParameterSpec
+import javax.crypto.spec.OAEPParameterSpec
+import java.security.spec.MGF1ParameterSpec
+import javax.crypto.spec.PSource
 
 class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -137,12 +142,24 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
       promise : Promise) {
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
-        val privateKey : PrivateKey = keyStore.getKey(alias, null) as PrivateKey;
-
+        val privateKey = keyStore.getKey(alias, null) as PrivateKey;
         val cipher : Cipher = Cipher.getInstance(encryptionType);
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        val mg1 = MGF1ParameterSpec("SHA-1");
+        val cipherSpec = OAEPParameterSpec(
+          "SHA-256",
+          "MGF1",
+          mg1,
+          PSource.PSpecified.DEFAULT
+        )
+        cipher.init(Cipher.DECRYPT_MODE, privateKey,cipherSpec);
 
-        val encryptedStringAsBytes : ByteArray = Base64.getDecoder().decode(stringToDecrypt.toByteArray());
+        val encryptedStringAsBytes : ByteArray = Base64.getDecoder().decode(stringToDecrypt);
+        try {
+          val decryptedString = cipher.doFinal(encryptedStringAsBytes)
+        }
+        catch(e : GeneralSecurityException) {
+          return promise.resolve(e)
+        }
 
         promise.resolve(stringToDecrypt);
       }
