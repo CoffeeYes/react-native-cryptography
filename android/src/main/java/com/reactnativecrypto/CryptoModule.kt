@@ -13,7 +13,7 @@ import java.security.KeyPair
 import java.security.PublicKey
 import java.security.PrivateKey
 import java.security.KeyStore
-import java.util.Base64
+import android.util.Base64
 import android.security.keystore.KeyProperties
 import java.security.KeyFactory
 import java.security.spec.X509EncodedKeySpec
@@ -108,9 +108,9 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
       }
 
       val publicBytes : ByteArray = publicKey.getEncoded();
-      val publicBASE64 : ByteArray = Base64.getEncoder().encode(publicBytes);
+      val publicBASE64 = Base64.encodeToString(publicBytes,Base64.DEFAULT);
 
-      promise.resolve(String(publicBASE64))
+      promise.resolve(publicBASE64)
     }
 
     @ReactMethod
@@ -129,9 +129,9 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
 
         val stringAsBytes : ByteArray = stringToEncrypt.toByteArray();
         val encryptedBytes : ByteArray = cipher.doFinal(stringAsBytes);
-        val encryptedStringBASE64 : ByteArray = Base64.getEncoder().encode(encryptedBytes);
+        val encryptedStringBASE64 = Base64.encodeToString(encryptedBytes,Base64.DEFAULT);
 
-        promise.resolve(String(encryptedStringBASE64));
+        promise.resolve(encryptedStringBASE64);
       }
 
     @ReactMethod
@@ -153,7 +153,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         )
         cipher.init(Cipher.DECRYPT_MODE, privateKey,cipherSpec);
 
-        val encryptedStringAsBytes : ByteArray = Base64.getDecoder().decode(stringToDecrypt);
+        val encryptedStringAsBytes = Base64.decode(stringToDecrypt,Base64.DEFAULT);
         try {
           val decryptedString = cipher.doFinal(encryptedStringAsBytes)
         }
