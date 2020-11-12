@@ -125,7 +125,13 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
 
         val publicKey : PublicKey = keyStore.getCertificate(alias).getPublicKey();
         val cipher : Cipher = Cipher.getInstance(encryptionType);
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        val cipherSpec = OAEPParameterSpec(
+          "SHA-256",
+          "MGF1",
+          MGF1ParameterSpec.SHA1,
+          PSource.PSpecified.DEFAULT
+        )
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey, cipherSpec);
 
         val stringAsBytes : ByteArray = stringToEncrypt.toByteArray();
         val encryptedBytes : ByteArray = cipher.doFinal(stringAsBytes);
@@ -148,19 +154,18 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         val cipherSpec = OAEPParameterSpec(
           "SHA-256",
           "MGF1",
-          mg1,
+          MGF1ParameterSpec.SHA1,
           PSource.PSpecified.DEFAULT
         )
         cipher.init(Cipher.DECRYPT_MODE, privateKey,cipherSpec);
 
         val encryptedStringAsBytes = Base64.decode(stringToDecrypt,Base64.DEFAULT);
         try {
-          val decryptedString = cipher.doFinal(encryptedStringAsBytes)
+          val decryptedString = cipher.doFinal(encryptedStringAsBytes);
+          return promise.resolve(String(decryptedString))
         }
         catch(e : GeneralSecurityException) {
           return promise.resolve(e)
         }
-
-        promise.resolve(stringToDecrypt);
       }
 }
