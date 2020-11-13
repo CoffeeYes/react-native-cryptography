@@ -10,15 +10,6 @@ type CryptoType = {
   decryptString(alias : string, encryptionType : string, stringToDecrypt : string) : Promise<string>;
 };
 
-type CryptoProps = {
-  color: string;
-  style: ViewStyle;
-};
-
 const { Crypto } = NativeModules;
-
-export const CryptoViewManager = requireNativeComponent<CryptoProps>(
-  'CryptoView'
-);
 
 export default Crypto as CryptoType;

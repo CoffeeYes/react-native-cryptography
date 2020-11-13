@@ -8,11 +8,6 @@ export default function App() {
   const [testText, setTestText] = React.useState<string | undefined>();
 
   React.useEffect(() => {
-    Crypto.multiply(3, 7).then(setResult);
-    Crypto.test().then(setResult);
-    Crypto.generateRSAKeyPair("test");
-    Crypto.loadKeyFromKeystore("test").then(publicKey => setPublicKey(publicKey))
-    // Crypto.deleteRSAKeyPair("test");
     encryptAndDecryptTest("this is a test string").then(text => setTestText(text))
   }, []);
 
@@ -30,10 +25,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>Result: test {result}</Text>
-      <Text>Public Key : {publicKey}</Text>
       <Text>Test Asym Encrypt : {testText}</Text>
-      <CryptoViewManager color="#32a852" style={styles.box} />
     </View>
   );
 }
