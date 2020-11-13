@@ -119,11 +119,12 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
       encryptionType : String,
       stringToEncrypt : String,
       promise : Promise) {
+        //retrieve key from keystore
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
-
-
         val publicKey : PublicKey = keyStore.getCertificate(alias).getPublicKey();
+
+        //init cipher with RSA/ECB/OAEPWithSHA-256AndMGF1Padding scheme
         val cipher : Cipher = Cipher.getInstance(encryptionType);
         val cipherSpec = OAEPParameterSpec(
           "SHA-256",
@@ -133,11 +134,20 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         )
         cipher.init(Cipher.ENCRYPT_MODE, publicKey, cipherSpec);
 
+        //cast string to bytes
         val stringAsBytes : ByteArray = stringToEncrypt.toByteArray();
-        val encryptedBytes : ByteArray = cipher.doFinal(stringAsBytes);
-        val encryptedStringBASE64 = Base64.encodeToString(encryptedBytes,Base64.DEFAULT);
+        val encryptedBytes : ByteArray
+        try {
+          //encrypt string
+          encryptedBytes = cipher.doFinal(stringAsBytes);
+          //encode encrypted string to base64 for javascript and pass upwards
+          val encryptedStringBASE64 = Base64.encodeToString(encryptedBytes,Base64.DEFAULT);
+          return promise.resolve(encryptedStringBASE64);
+        }
+        catch(e : GeneralSecurityException) {
+          return promise.resolve(e)
+        }
 
-        promise.resolve(encryptedStringBASE64);
       }
 
     @ReactMethod
@@ -146,11 +156,13 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
       encryptionType : String,
       stringToDecrypt : String,
       promise : Promise) {
+        //retrieve key from keystore
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
         val privateKey = keyStore.getKey(alias, null) as PrivateKey;
+
+        //init cipher according to RSA/ECB/OAEPWithSHA-256AndMGF1Padding scheme
         val cipher : Cipher = Cipher.getInstance(encryptionType);
-        val mg1 = MGF1ParameterSpec("SHA-1");
         val cipherSpec = OAEPParameterSpec(
           "SHA-256",
           "MGF1",
@@ -159,7 +171,9 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         )
         cipher.init(Cipher.DECRYPT_MODE, privateKey,cipherSpec);
 
+        //decode base64 string passed in from javscript
         val encryptedStringAsBytes = Base64.decode(stringToDecrypt,Base64.DEFAULT);
+        //try to decrypt bytes and resolve promise accordingly
         try {
           val decryptedString = cipher.doFinal(encryptedStringAsBytes);
           return promise.resolve(String(decryptedString))
