@@ -60,16 +60,6 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     @ReactMethod
     fun generateRSAKeyPair(alias : String, promise : Promise) {
 
-      /* val keyGenerator : KeyPairGenerator = KeyPairGenerator.getInstance("RSA");
-      keyGenerator.initialize(2048);
-
-      val keys : KeyPair = keyGenerator.generateKeyPair();
-
-      val public : PublicKey = keys.getPublic();
-      val publicBytes : ByteArray = public.getEncoded();
-      val publicBASE64 : ByteArray = Base64.getEncoder().encode(publicBytes);
-
-      promise.resolve(String(publicBASE64)); */
       val keyPairGenerator : KeyPairGenerator =
       KeyPairGenerator.getInstance(
         KeyProperties.KEY_ALGORITHM_RSA,
@@ -90,10 +80,15 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     }
 
     @ReactMethod
-    fun deleteRSAKeyPair(alias : String, promise : Promise) {
+    fun deleteKeyPair(alias : String, promise : Promise) {
       val keyStore = KeyStore.getInstance("AndroidKeyStore")
       keyStore.load(null)
-      keyStore.deleteEntry(alias)
+      try {
+        keyStore.deleteEntry(alias)
+      }
+      catch(e : GeneralSecurityException) {
+        return promise.resolve(e);
+      }
       promise.resolve(null);
     }
 
@@ -122,7 +117,10 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         //retrieve key from keystore
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
-        val publicKey : PublicKey = keyStore.getCertificate(alias).getPublicKey();
+        val publicKey : PublicKey? = keyStore.getCertificate(alias)?.getPublicKey();
+        if(publicKey === null) {
+          return promise.resolve("Public Key does not exist")
+        }
 
         //init cipher with RSA/ECB/OAEPWithSHA-256AndMGF1Padding scheme
         val cipher : Cipher = Cipher.getInstance(encryptionType);
@@ -159,7 +157,11 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         //retrieve key from keystore
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
-        val privateKey = keyStore.getKey(alias, null) as PrivateKey;
+        val privateKey = keyStore.getKey(alias, null) as PrivateKey?;
+
+        if(privateKey === null) {
+          return promise.resolve("Private key does not exist")
+        }
 
         //init cipher according to RSA/ECB/OAEPWithSHA-256AndMGF1Padding scheme
         val cipher : Cipher = Cipher.getInstance(encryptionType);

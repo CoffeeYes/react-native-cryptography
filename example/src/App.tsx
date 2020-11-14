@@ -8,6 +8,7 @@ export default function App() {
   const [testText, setTestText] = React.useState<string | undefined>();
 
   React.useEffect(() => {
+    // Crypto.generateRSAKeyPair("test");
     encryptAndDecryptTest("this is a test string").then(text => setTestText(text))
   }, []);
 
