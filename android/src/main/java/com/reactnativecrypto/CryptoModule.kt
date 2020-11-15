@@ -171,7 +171,13 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
           MGF1ParameterSpec.SHA1,
           PSource.PSpecified.DEFAULT
         )
-        cipher.init(Cipher.DECRYPT_MODE, privateKey,cipherSpec);
+
+        if(encryptionType === "RSA/ECB/OAEPWithSHA-256AndMGF1Padding") {
+          cipher.init(Cipher.DECRYPT_MODE, privateKey,cipherSpec);
+        }
+        else {
+          cipher.init(Cipher.DECRYPT_MODE,privateKey)
+        }
 
         //decode base64 string passed in from javscript
         val encryptedStringAsBytes = Base64.decode(stringToDecrypt,Base64.DEFAULT);
