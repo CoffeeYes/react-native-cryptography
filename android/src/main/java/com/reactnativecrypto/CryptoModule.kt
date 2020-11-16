@@ -30,6 +30,19 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         return "Crypto"
     }
 
+    override fun getConstants(): Map<String, Any>? {
+        // Export any constants to be used in your native module
+        // https://facebook.github.io/react-native/docs/native-modules-android.html#the-toast-module
+        val constants : Map<String, Any> = mapOf(
+            "algorithm" to mapOf(
+                "RSA_OEAP_SHA256_MGF1" to "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"
+            )
+        )
+
+        return constants
+    }
+
+
     // Example method
     // See https://facebook.github.io/react-native/docs/native-modules-android
     @ReactMethod
