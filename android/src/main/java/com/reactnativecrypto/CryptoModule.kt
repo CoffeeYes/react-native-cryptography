@@ -37,7 +37,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
             "cipherTypes" to mapOf(
                 "RSA_OEAP_SHA256_MGF1" to "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"
             ),
-            "Algorithms" to mapOf(
+            "algorithms" to mapOf(
                 "RSA" to "RSA",
                 "AES" to "AES",
                 "AES_128" to "AES_128",
@@ -48,7 +48,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
                 "DES" to "DES",
                 "DESede" to "DESede"
             ),
-            "Modes" to mapOf(
+            "modes" to mapOf(
                 "CBC" to "CBC",
                 "CFB" to "CFB",
                 "CTR" to "CTR",
@@ -59,6 +59,17 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
                 "GCM" to "GCM",
                 "Poly1305" to "Poly1305",
                 "NONE" to "NONE"
+            ),
+            "paddings" to mapOf(
+                "NO_PADDING" to "NoPadding",
+                "ISO10126Padding" to "ISO10126Padding",
+                "PKCS5Padding" to "PKCS5Padding",
+                "OAEPPadding" to "OAEPPadding",
+                "OAEP_SHA1_MGF1Padding" to "OAEPwithSHA-1andMGF1Padding",
+                "OAEP_SHA256_MGF1Padding" to "OAEPwithSHA-256andMGF1Padding",
+                "OAEP_SHA224_MGF1Padding" to "OAEPwithSHA-224andMGF1Padding",
+                "OAEP_SHA384_MGF1Padding" to "OAEPwithSHA-384andMGF1Padding",
+                "OAEP_SHA512_MGF1Padding" to "OAEPwithSHA-512andMGF1Padding"
             )
         )
 
