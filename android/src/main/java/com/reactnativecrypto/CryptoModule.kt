@@ -34,10 +34,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
         // Export any constants to be used in your native module
         // https://facebook.github.io/react-native/docs/native-modules-android.html#the-toast-module
         val constants : Map<String, Any> = mapOf(
-            "cipherTypes" to mapOf(
-                "RSA_OEAP_SHA256_MGF1" to "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"
-            ),
-            "algorithms" to mapOf(
+            "algorithm" to mapOf(
                 "RSA" to "RSA",
                 "AES" to "AES",
                 "AES_128" to "AES_128",
@@ -48,7 +45,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
                 "DES" to "DES",
                 "DESede" to "DESede"
             ),
-            "modes" to mapOf(
+            "blockMode" to mapOf(
                 "CBC" to "CBC",
                 "CFB" to "CFB",
                 "CTR" to "CTR",
@@ -60,7 +57,7 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
                 "Poly1305" to "Poly1305",
                 "NONE" to "NONE"
             ),
-            "paddings" to mapOf(
+            "padding" to mapOf(
                 "NO_PADDING" to "NoPadding",
                 "ISO10126Padding" to "ISO10126Padding",
                 "PKCS5Padding" to "PKCS5Padding",
@@ -158,9 +155,12 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     @ReactMethod
     fun encryptString(
       alias : String,
-      encryptionType : String,
+      algorithm : String,
+      blockMode : String,
+      padding : String,
       stringToEncrypt : String,
       promise : Promise) {
+        val encryptionType = algorithm.plus("/").plus(blockMode).plus("/").plus(padding);
         //retrieve key from keystore
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
@@ -198,9 +198,12 @@ class CryptoModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     @ReactMethod
     fun decryptString(
       alias : String,
-      encryptionType : String,
+      algorithm : String,
+      blockMode : String,
+      padding : String,
       stringToDecrypt : String,
       promise : Promise) {
+        val encryptionType = algorithm.plus("/").plus(blockMode).plus("/").plus(padding);
         //retrieve key from keystore
         val keyStore : KeyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);

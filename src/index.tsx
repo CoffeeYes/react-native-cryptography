@@ -6,8 +6,18 @@ type CryptoType = {
   generateRSAKeyPair(alias : string): Promise<void>;
   deleteKeyPair(alias : string) : Promise<void>;
   loadKeyFromKeystore(alias : string) : Promise<string>;
-  encryptString(alias : string, encryptionType : string, stringToEncrypt : string) : Promise<string>;
-  decryptString(alias : string, encryptionType : string, stringToDecrypt : string) : Promise<string>;
+  encryptString(
+    alias : string,
+    algorithm : string,
+    blockMode : string,
+    padding : string,
+    stringToEncrypt : string) : Promise<string>;
+  decryptString(
+    alias : string,
+    algorithm : string,
+    blockMode : string,
+    padding : string, 
+    stringToDecrypt : string) : Promise<string>;
 };
 
 const { Crypto } = NativeModules;
